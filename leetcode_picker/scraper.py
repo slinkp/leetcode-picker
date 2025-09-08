@@ -110,113 +110,66 @@ class LeetCodeScraper:
         return problems
 
     def scrape_grind75(self) -> List[Problem]:
-        """Get Grind75 problems using the canonical problem list."""
-        problems = []
+        """Scrape Grind75 page (no grouping) in on-page order, deduped by URL."""
+        problems: List[Problem] = []
         grind75_url = STUDY_PLANS["grind75"]
 
-        # Canonical Grind75 problem list (75 problems total)
-        grind75_problems = [
-            {"title": "Two Sum", "difficulty": "easy"},
-            {"title": "Valid Parentheses", "difficulty": "easy"},
-            {"title": "Merge Two Sorted Lists", "difficulty": "easy"},
-            {"title": "Best Time to Buy and Sell Stock", "difficulty": "easy"},
-            {"title": "Valid Palindrome", "difficulty": "easy"},
-            {"title": "Invert Binary Tree", "difficulty": "easy"},
-            {"title": "Valid Anagram", "difficulty": "easy"},
-            {"title": "Binary Search", "difficulty": "easy"},
-            {"title": "Flood Fill", "difficulty": "easy"},
-            {
-                "title": "Lowest Common Ancestor of a Binary Search Tree",
-                "difficulty": "medium",
-            },
-            {"title": "Balanced Binary Tree", "difficulty": "easy"},
-            {"title": "Linked List Cycle", "difficulty": "easy"},
-            {"title": "Implement Queue using Stacks", "difficulty": "easy"},
-            {"title": "First Bad Version", "difficulty": "easy"},
-            {"title": "Ransom Note", "difficulty": "easy"},
-            {"title": "Climbing Stairs", "difficulty": "easy"},
-            {"title": "Longest Palindrome", "difficulty": "easy"},
-            {"title": "Reverse Linked List", "difficulty": "easy"},
-            {"title": "Majority Element", "difficulty": "easy"},
-            {"title": "Add Binary", "difficulty": "easy"},
-            {"title": "Diameter of Binary Tree", "difficulty": "easy"},
-            {"title": "Middle of the Linked List", "difficulty": "easy"},
-            {"title": "Maximum Depth of Binary Tree", "difficulty": "easy"},
-            {"title": "Contains Duplicate", "difficulty": "easy"},
-            {"title": "Meeting Rooms", "difficulty": "easy"},
-            {"title": "Maximum Subarray", "difficulty": "medium"},
-            {"title": "Insert Interval", "difficulty": "medium"},
-            {"title": "01 Matrix", "difficulty": "medium"},
-            {"title": "K Closest Points to Origin", "difficulty": "medium"},
-            {
-                "title": "Longest Substring Without Repeating Characters",
-                "difficulty": "medium",
-            },
-            {"title": "3Sum", "difficulty": "medium"},
-            {"title": "Binary Tree Level Order Traversal", "difficulty": "medium"},
-            {"title": "Clone Graph", "difficulty": "medium"},
-            {"title": "Course Schedule", "difficulty": "medium"},
-            {"title": "Implement Trie (Prefix Tree)", "difficulty": "medium"},
-            {"title": "Coin Change", "difficulty": "medium"},
-            {"title": "Product of Array Except Self", "difficulty": "medium"},
-            {"title": "Validate Binary Search Tree", "difficulty": "medium"},
-            {"title": "Number of Islands", "difficulty": "medium"},
-            {"title": "Rotting Oranges", "difficulty": "medium"},
-            {"title": "Search in Rotated Sorted Array", "difficulty": "medium"},
-            {"title": "Combination Sum", "difficulty": "medium"},
-            {"title": "Permutations", "difficulty": "medium"},
-            {"title": "Merge Intervals", "difficulty": "medium"},
-            {"title": "Lowest Common Ancestor of a Binary Tree", "difficulty": "medium"},
-            {"title": "Time Based Key-Value Store", "difficulty": "medium"},
-            {"title": "Accounts Merge", "difficulty": "medium"},
-            {"title": "Sort Colors", "difficulty": "medium"},
-            {"title": "Word Break", "difficulty": "medium"},
-            {"title": "Partition Equal Subset Sum", "difficulty": "medium"},
-            {"title": "String to Integer (atoi)", "difficulty": "medium"},
-            {"title": "Spiral Matrix", "difficulty": "medium"},
-            {"title": "Subsets", "difficulty": "medium"},
-            {"title": "Binary Tree Right Side View", "difficulty": "medium"},
-            {"title": "Longest Palindromic Substring", "difficulty": "medium"},
-            {"title": "Unique Paths", "difficulty": "medium"},
-            {
-                "title": "Construct Binary Tree from Preorder and Inorder Traversal",
-                "difficulty": "medium",
-            },
-            {"title": "Container With Most Water", "difficulty": "medium"},
-            {"title": "Letter Combinations of a Phone Number", "difficulty": "medium"},
-            {"title": "Word Search", "difficulty": "medium"},
-            {"title": "Find All Anagrams in a String", "difficulty": "medium"},
-            {"title": "Minimum Height Trees", "difficulty": "medium"},
-            {"title": "Task Scheduler", "difficulty": "hard"},
-            {"title": "LRU Cache", "difficulty": "medium"},
-            {"title": "Kth Smallest Element in a BST", "difficulty": "medium"},
-            {"title": "Minimum Window Substring", "difficulty": "hard"},
-            {"title": "Serialize and Deserialize Binary Tree", "difficulty": "hard"},
-            {"title": "Trapping Rain Water", "difficulty": "hard"},
-            {"title": "Find Median from Data Stream", "difficulty": "hard"},
-            {"title": "Word Ladder", "difficulty": "hard"},
-            {"title": "Basic Calculator", "difficulty": "hard"},
-            {"title": "Maximum Profit in Job Scheduling", "difficulty": "hard"},
-            {"title": "Merge k Sorted Lists", "difficulty": "hard"},
-            {"title": "Largest Rectangle in Histogram", "difficulty": "hard"},
-            {"title": "Binary Tree Maximum Path Sum", "difficulty": "hard"},
-            {"title": "Maximum Rectangle", "difficulty": "hard"},
-            {"title": "Meeting Rooms II", "difficulty": "medium"},
-            {"title": "Alien Dictionary", "difficulty": "hard"},
-            {"title": "Graph Valid Tree", "difficulty": "medium"},
-            {"title": "Pacific Atlantic Water Flow", "difficulty": "medium"},
-        ]
+        # Always use "no grouping" view for stable order
+        fetch_url = grind75_url.rstrip("/")
+        if "grouping=" not in fetch_url:
+            fetch_url = f"{fetch_url}/?grouping=none"
 
-        for problem_data in grind75_problems:
-            title = problem_data["title"]
-            difficulty = problem_data["difficulty"]
-            problem_url = self._map_title_to_leetcode_url(title)
+        try:
+            resp = self.session.get(fetch_url)
+            resp.raise_for_status()
+        except requests.RequestException as e:
+            print(f"Error scraping grind75: {e}")
+            return problems
 
+        soup = BeautifulSoup(resp.content, "html.parser")
+
+        # Select only LeetCode problem links in order
+        links = soup.select('a[href*="leetcode.com/problems/"]')
+
+        seen_slugs: set[str] = set()
+        items: List[Dict[str, str]] = []
+
+        for a in links:
+            href = a.get("href") or ""
+            title = a.get_text(strip=True)
+            if not href or not title:
+                continue
+
+            m = re.search(r"/problems/([^/?#]+)/?", href)
+            if not m:
+                continue
+            slug = m.group(1)
+            if slug in seen_slugs:
+                continue
+            seen_slugs.add(slug)
+
+            # Normalize URL to match storage keys (with trailing slash)
+            lc_url = f"https://leetcode.com/problems/{slug}/"
+
+            # Try to find nearby difficulty text (e.g., "Easy·15 mins")
+            difficulty = "medium"
+            diff_text = a.find_next(string=re.compile(r"^(Easy|Medium|Hard)\b"))
+            if diff_text:
+                difficulty = diff_text.strip().split()[0].lower()
+
+            items.append({"title": title, "url": lc_url, "difficulty": difficulty})
+
+        if len(items) != 75:
+            print(
+                f"Warning: Grind75 scrape yielded {len(items)} items (expected 75)"
+            )
+
+        for it in items[:75]:
             problems.append(
                 Problem(
-                    url=problem_url,
-                    title=title,
-                    difficulty=difficulty,
+                    url=it["url"],
+                    title=it["title"],
+                    difficulty=it["difficulty"],
                     study_plan_urls=[grind75_url],
                 )
             )
