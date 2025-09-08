@@ -11,6 +11,9 @@
       "Bash(git commit:*)"
     ],
     "deny": [],
-    "ask": []
+    "ask": [],
+    "additionalDirectories": [
+      "/Users/paul/.leetcode-picker"
+    ]
   }
 }

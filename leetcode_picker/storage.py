@@ -1,6 +1,7 @@
 """CSV storage for problem data."""
 
 import csv
+import json
 from pathlib import Path
 from typing import Dict, List, Optional
 
@@ -13,7 +14,7 @@ HEADERS = [
     "url",
     "title",
     "difficulty",
-    "study_plan_url",
+    "study_plan_urls",  # Now stores JSON array of URLs
     "last_pass_date",
     "completions",
     "submissions",
@@ -46,11 +47,28 @@ class ProblemStorage:
         with open(self.data_file, "r", encoding="utf-8") as f:
             reader = csv.DictReader(f)
             for row in reader:
+                # Handle backward compatibility for old format
+                if "study_plan_url" in row:
+                    # Old format - single URL
+                    study_plan_urls = (
+                        [row["study_plan_url"]] if row["study_plan_url"] else []
+                    )
+                else:
+                    # New format - JSON array of URLs
+                    try:
+                        study_plan_urls = (
+                            json.loads(row["study_plan_urls"])
+                            if row["study_plan_urls"]
+                            else []
+                        )
+                    except (json.JSONDecodeError, KeyError):
+                        study_plan_urls = []
+
                 problem = Problem(
                     url=row["url"],
                     title=row["title"],
                     difficulty=row["difficulty"],
-                    study_plan_url=row["study_plan_url"],
+                    study_plan_urls=study_plan_urls,
                     last_pass_date=row["last_pass_date"] or None,
                     completions=int(row["completions"]) if row["completions"] else 0,
                     submissions=int(row["submissions"]) if row["submissions"] else 0,
@@ -72,7 +90,7 @@ class ProblemStorage:
                         "url": problem.url,
                         "title": problem.title,
                         "difficulty": problem.difficulty,
-                        "study_plan_url": problem.study_plan_url,
+                        "study_plan_urls": json.dumps(problem.study_plan_urls),
                         "last_pass_date": problem.last_pass_date or "",
                         "completions": problem.completions,
                         "submissions": problem.submissions,

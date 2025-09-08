@@ -68,7 +68,7 @@ class LeetCodeScraper:
                                 url=problem_url,
                                 title=title,
                                 difficulty=difficulty.lower(),
-                                study_plan_url=plan_url,
+                                study_plan_urls=[plan_url],
                             )
                         )
 
@@ -107,7 +107,7 @@ class LeetCodeScraper:
                         url=problem_url,
                         title=title,
                         difficulty=difficulty,
-                        study_plan_url=plan_url,
+                        study_plan_urls=[plan_url],
                     )
                 )
 
@@ -143,7 +143,7 @@ class LeetCodeScraper:
                                 url=problem_url,
                                 title=title,
                                 difficulty="medium",  # Default
-                                study_plan_url=grind75_url,
+                                study_plan_urls=[grind75_url],
                             )
                         )
 
@@ -178,22 +178,45 @@ class LeetCodeScraper:
         return all_problems
 
     def update_problem_database(self, storage) -> None:
-        """Update the problem database with scraped data."""
+        """Update the problem database with scraped data, merging overlapping problems."""
         all_problems = self.scrape_all_study_plans()
 
-        total_added = 0
+        # Collect all problems and merge overlaps
+        merged_problems: Dict[str, Problem] = {}
+
         for plan_name, problems in all_problems.items():
             for problem in problems:
-                # Check if problem already exists
-                existing = storage.get_problem(problem.url)
-                if existing:
-                    # Update title and difficulty if needed
-                    existing.title = problem.title
-                    existing.difficulty = problem.difficulty
-                    storage.add_or_update_problem(existing)
+                if problem.url in merged_problems:
+                    # Problem exists - merge study plan URLs
+                    existing = merged_problems[problem.url]
+                    # Add the new study plan URL if not already present
+                    if problem.study_plan_urls[0] not in existing.study_plan_urls:
+                        existing.study_plan_urls.extend(problem.study_plan_urls)
                 else:
-                    # Add new problem
-                    storage.add_or_update_problem(problem)
-                    total_added += 1
+                    # New problem
+                    merged_problems[problem.url] = problem
 
-        print(f"Added {total_added} new problems to database")
+        # Save merged problems to database
+        existing_db_problems = storage.load_problems()
+        total_added = 0
+        total_updated = 0
+
+        for problem in merged_problems.values():
+            if problem.url in existing_db_problems:
+                # Update existing problem, preserve completion data
+                existing = existing_db_problems[problem.url]
+                existing.title = problem.title
+                existing.difficulty = problem.difficulty
+                existing.study_plan_urls = (
+                    problem.study_plan_urls
+                )  # Update with merged list
+                storage.add_or_update_problem(existing)
+                total_updated += 1
+            else:
+                # Add new problem
+                storage.add_or_update_problem(problem)
+                total_added += 1
+
+        print(
+            f"Added {total_added} new problems, updated {total_updated} existing problems"
+        )

@@ -12,11 +12,17 @@ class Problem:
     url: str
     title: str
     difficulty: str
-    study_plan_url: str
+    study_plan_urls: list[str]  # Can belong to multiple study plans
     last_pass_date: Optional[str] = None  # YYYY-MM-DD format
     completions: int = 0
     submissions: int = 0
     overridden_difficulty: Optional[str] = None
+
+    # Backward compatibility property
+    @property
+    def study_plan_url(self) -> str:
+        """Get the first study plan URL for backward compatibility."""
+        return self.study_plan_urls[0] if self.study_plan_urls else ""
 
     @property
     def effective_difficulty(self) -> str:

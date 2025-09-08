@@ -32,13 +32,17 @@ def choose_problem(difficulty: Optional[str], study_plan: Optional[str]) -> None
             print("Available plans: leetcode-75, top-interview-150")
             return
 
-        problems = [p for p in problems if study_plan in p.study_plan_url]
+        problems = [
+            p for p in problems if any(study_plan in url for url in p.study_plan_urls)
+        ]
     else:
         # Default: only show problems from main study plans
         problems = [
             p
             for p in problems
-            if any(plan in p.study_plan_url for plan in STUDY_PLANS.values())
+            if any(
+                plan in url for plan in STUDY_PLANS.values() for url in p.study_plan_urls
+            )
         ]
 
     if not problems:
@@ -120,16 +124,12 @@ def show_progress() -> None:
     problems = storage.load_problems()
 
     for problem in problems.values():
-        # Determine which study plan this belongs to
-        plan_name = "unknown"
-        for name, url in STUDY_PLANS.items():
-            if url in problem.study_plan_url:
-                plan_name = name
-                break
-
-        plan_stats[plan_name]["total"] += 1
-        if problem.is_completed:
-            plan_stats[plan_name]["completed"] += 1
+        # Check which study plans this problem belongs to (can be multiple)
+        for plan_name, plan_url in STUDY_PLANS.items():
+            if any(plan_url in url for url in problem.study_plan_urls):
+                plan_stats[plan_name]["total"] += 1
+                if problem.is_completed:
+                    plan_stats[plan_name]["completed"] += 1
 
     print("Study Plan Progress:")
     print("=" * 50)
