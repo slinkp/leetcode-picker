@@ -221,13 +221,19 @@ def setup_auth() -> None:
         user_info = auth.get_user_info()
         if user_info:
             username = user_info.get("username", "Unknown")
-            real_name = user_info.get("realName", "")
-            verified = "✓" if user_info.get("isVerified") else ""
+            first_name = user_info.get("firstName", "")
+            last_name = user_info.get("lastName", "")
+            full_name = f"{first_name} {last_name}".strip()
 
             print("✅ Authentication successful!")
-            print(f"   User: {username} {verified}")
-            if real_name:
-                print(f"   Name: {real_name}")
+            print(f"   User: {username}")
+            if full_name:
+                print(f"   Name: {full_name}")
+
+            # Show profile info if available
+            profile = user_info.get("profile", {})
+            if profile and profile.get("ranking"):
+                print(f"   Ranking: {profile['ranking']}")
         else:
             print("✅ Authentication working, but couldn't fetch user info.")
     else:

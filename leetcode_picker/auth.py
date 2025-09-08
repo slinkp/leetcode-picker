@@ -76,7 +76,8 @@ class LeetCodeAuth:
         session.headers.update(
             {
                 "X-CSRFToken": self.csrf_token,
-                "Referer": "https://leetcode.com",
+                "Referer": "https://leetcode.com/",
+                "Content-Type": "application/json",
                 "User-Agent": (
                     "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) "
                     "AppleWebKit/537.36 (KHTML, like Gecko) "
@@ -99,8 +100,8 @@ class LeetCodeAuth:
             query currentUser {
                 user {
                     username
-                    realName
-                    isVerified
+                    firstName
+                    lastName
                 }
             }
             """
@@ -130,8 +131,8 @@ class LeetCodeAuth:
             query currentUser {
                 user {
                     username
-                    realName
-                    isVerified
+                    firstName
+                    lastName
                     profile {
                         userAvatar
                         ranking

@@ -6,7 +6,8 @@
       "Bash(python -m leetcode_picker.main:*)",
       "Bash(leetcode-picker:*)",
       "Bash(./black-flake8-mypy .)",
-      "Bash(git add:*)"
+      "Bash(git add:*)",
+      "Bash(python:*)"
     ],
     "deny": [],
     "ask": []
