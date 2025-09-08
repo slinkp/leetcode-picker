@@ -178,6 +178,89 @@ class LeetCodeScraper:
 
             items.append({"title": title, "url": lc_url, "difficulty": "medium"})
 
+        # Fallback: scan Next.js chunk scripts if main HTML had no links
+        if not items:
+            script_tags = soup.find_all("script", src=True)
+            script_srcs = [tag.get("src", "") for tag in script_tags if tag.get("src")]
+            # Consider only Next.js chunk scripts
+            chunk_srcs = [
+                s for s in script_srcs if "/_next/static/chunks/" in s and s.endswith(".js")
+            ]
+
+            # Normalize to absolute URLs
+            def abs_url(u: str) -> str:
+                return u if u.startswith("http") else f"https://www.techinterviewhandbook.org{u}"
+
+            chunk_urls = [abs_url(s) for s in chunk_srcs]
+
+            # Prioritize the main page chunk for better ordering
+            chunk_urls.sort(key=lambda u: (("app/page" not in u), u))
+
+            if verbose:
+                print(f"[grind75] chunk scripts found: {len(chunk_urls)}", file=sys.stderr)
+                for u in chunk_urls[:5]:
+                    print(f"[grind75] chunk: {u}", file=sys.stderr)
+
+            # Patterns to match URLs and slugs in various encodings
+            patterns = [
+                r"https?://leetcode\.com/problems/([a-z0-9\-]+)/?",
+                r"leetcode\.com\\?/problems\\?/([a-z0-9\-]+)",
+                r'["\']/?problems/([a-z0-9\-]+)/?["\']',
+            ]
+
+            for js_url in chunk_urls:
+                try:
+                    if verbose:
+                        print(f"[grind75] GET {js_url}", file=sys.stderr)
+                    js_resp = self.session.get(js_url)
+                    if verbose:
+                        print(
+                            f"[grind75] {js_url} status={js_resp.status_code} "
+                            f"bytes={len(js_resp.text)}",
+                            file=sys.stderr,
+                        )
+                    js_resp.raise_for_status()
+                except requests.RequestException as e:
+                    if verbose:
+                        print(f"[grind75] error fetching chunk {js_url}: {e}", file=sys.stderr)
+                    continue
+
+                js = js_resp.text
+                before = len(items)
+
+                for pat in patterns:
+                    for mm in re.finditer(pat, js, re.I):
+                        slug = mm.group(1).lower()
+                        if slug in seen_slugs:
+                            continue
+                        seen_slugs.add(slug)
+
+                        lc_url = f"https://leetcode.com/problems/{slug}/"
+                        # Derive a readable title from slug; local DB title is preferred later
+                        title = slug.replace("-", " ").title()
+                        title = (
+                            title.replace("Ii", "II")
+                            .replace("Iii", "III")
+                            .replace("Iv", "IV")
+                            .replace("Bst", "BST")
+                            .replace("Lru", "LRU")
+                            .replace("Atoi", "atoi")
+                        )
+                        if slug == "01-matrix":
+                            title = "01 Matrix"
+                        if slug == "3sum":
+                            title = "3Sum"
+
+                        items.append({"title": title, "url": lc_url, "difficulty": "medium"})
+
+                if verbose:
+                    added = len(items) - before
+                    print(f"[grind75] {js_url} added {added}, total={len(items)}", file=sys.stderr)
+
+                # Stop once we likely have the full list
+                if len(items) >= 75:
+                    break
+
         if verbose:
             print(f"[grind75] unique slugs found: {len(seen_slugs)}", file=sys.stderr)
             if items:
