@@ -65,9 +65,9 @@ leetcode-picker grind75-completed
 Shows completion percentages for each study plan.
 
 ### `grind75-completed` - List completed Grind75 titles in order
-Outputs the titles of your completed problems in the same order as the Grind75
-list, along with a completion summary. Use this to manually mark them complete
-on the Grind75 website.
+Outputs the titles (with LeetCode URLs) of your completed problems in the same
+order as the Grind75 list, along with a completion summary. Use this to manually
+mark them complete on the Grind75 website.
 
 ## Data Storage
 
