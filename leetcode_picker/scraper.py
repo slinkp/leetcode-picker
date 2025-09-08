@@ -149,8 +149,9 @@ class LeetCodeScraper:
         pattern = r"https?://leetcode\.com/problems/([a-z0-9\-]+)/?"
         total_occurrences = len(re.findall(pattern, html, flags=re.I))
         if verbose:
-            print(f"[grind75] total link occurrences: {total_occurrences}",
-                  file=sys.stderr)
+            print(
+                f"[grind75] total link occurrences: {total_occurrences}", file=sys.stderr
+            )
 
         for m in re.finditer(pattern, html, re.I):
             slug = m.group(1).lower()
