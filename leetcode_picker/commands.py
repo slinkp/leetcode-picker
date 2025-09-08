@@ -4,6 +4,7 @@ import random
 from collections import defaultdict
 from datetime import datetime, timedelta
 from urllib.parse import urlparse
+from getpass import getpass
 from typing import Dict, Optional
 
 from .auth import LeetCodeAuth
@@ -331,10 +332,10 @@ def setup_auth() -> None:
     print("and find the LEETCODE_SESSION and csrftoken values there.")
     print()
 
-    # Get cookies from user
+    # Get cookies from user (do not echo to screen)
     print("Please enter your cookies:")
-    session_cookie = input("LEETCODE_SESSION: ").strip()
-    csrf_token = input("csrftoken: ").strip()
+    session_cookie = getpass("LEETCODE_SESSION: ").strip()
+    csrf_token = getpass("csrftoken: ").strip()
 
     if not session_cookie or not csrf_token:
         print("❌ Both cookies are required. Please try again.")

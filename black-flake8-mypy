@@ -7,6 +7,22 @@
 echo Black...
 black $*
 echo Flake8...
-flake8 $* # || exit 1
+flake8 $* || exit 1
+# Optional secrets scan (runs only if tools are installed)
+echo Secrets...
+if command -v detect-secrets >/dev/null 2>&1; then
+  if [ -f .secrets.baseline ]; then
+    echo "detect-secrets..."
+    detect-secrets-hook --baseline .secrets.baseline || exit 1
+  else
+    echo "detect-secrets not initialized (.secrets.baseline missing)."
+    echo "Run: detect-secrets scan > .secrets.baseline to enable blocking."
+  fi
+fi
+if command -v gitleaks >/dev/null 2>&1; then
+  echo "gitleaks..."
+  gitleaks detect --no-git --exit-code 1 || exit 1
+fi
+
 echo Mypy...
 mypy $* || exit 1

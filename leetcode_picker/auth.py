@@ -25,8 +25,12 @@ class LeetCodeAuth:
 
     def save_cookies(self, session_cookie: str, csrf_token: str) -> None:
         """Save authentication cookies to file."""
-        # Ensure directory exists
+        # Ensure directory exists with restrictive permissions
         self.auth_file.parent.mkdir(parents=True, exist_ok=True)
+        try:
+            self.auth_file.parent.chmod(0o700)
+        except OSError:
+            pass
 
         auth_data = {
             "leetcode_session": session_cookie,
@@ -46,6 +50,16 @@ class LeetCodeAuth:
         """Load authentication cookies from file. Returns True if successful."""
         if not self.auth_file.exists():
             return False
+
+        # Enforce restrictive permissions at load time as well
+        try:
+            self.auth_file.parent.chmod(0o700)
+        except OSError:
+            pass
+        try:
+            os.chmod(self.auth_file, 0o600)
+        except OSError:
+            pass
 
         try:
             with open(self.auth_file, "r") as f:
