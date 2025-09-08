@@ -136,6 +136,9 @@ class LeetCodeScraper:
 
         for a in links:
             href = a.get("href") or ""
+            # BeautifulSoup can return a list for some attributes; normalize to str.
+            if isinstance(href, list):
+                href = href[0] if href else ""
             title = a.get_text(strip=True)
             if not href or not title:
                 continue
@@ -154,8 +157,10 @@ class LeetCodeScraper:
             # Try to find nearby difficulty text (e.g., "Easy·15 mins")
             difficulty = "medium"
             diff_text = a.find_next(string=re.compile(r"^(Easy|Medium|Hard)\b"))
-            if diff_text:
-                difficulty = diff_text.strip().split()[0].lower()
+            if diff_text is not None:
+                diff_str = str(diff_text).strip()
+                if diff_str:
+                    difficulty = diff_str.split()[0].lower()
 
             items.append({"title": title, "url": lc_url, "difficulty": difficulty})
 
