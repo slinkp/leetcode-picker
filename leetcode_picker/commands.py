@@ -27,9 +27,9 @@ def choose_problem(difficulty: Optional[str], study_plan: Optional[str]) -> None
 
     # Filter by study plan if specified
     if study_plan:
-        if study_plan not in ["leetcode-75", "top-interview-150"]:
+        if study_plan not in ["leetcode-75", "top-interview-150", "grind75"]:
             print(f"Unknown study plan: {study_plan}")
-            print("Available plans: leetcode-75, top-interview-150")
+            print("Available plans: leetcode-75, top-interview-150, grind75")
             return
 
         problems = [

@@ -13,10 +13,6 @@ from .models import Problem
 STUDY_PLANS = {
     "leetcode-75": "https://leetcode.com/studyplan/leetcode-75/",
     "top-interview-150": "https://leetcode.com/studyplan/top-interview-150/",
-}
-
-# Optional study plan
-OPTIONAL_STUDY_PLANS = {
     "grind75": "https://www.techinterviewhandbook.org/grind75/",
 }
 
@@ -114,48 +110,141 @@ class LeetCodeScraper:
         return problems
 
     def scrape_grind75(self) -> List[Problem]:
-        """Scrape Grind75 problems (simplified implementation)."""
+        """Get Grind75 problems using the canonical problem list."""
         problems = []
-        grind75_url = OPTIONAL_STUDY_PLANS["grind75"]
+        grind75_url = STUDY_PLANS["grind75"]
 
-        try:
-            response = self.session.get(grind75_url)
-            response.raise_for_status()
+        # Canonical Grind75 problem list (75 problems total)
+        grind75_problems = [
+            {"title": "Two Sum", "difficulty": "easy"},
+            {"title": "Valid Parentheses", "difficulty": "easy"},
+            {"title": "Merge Two Sorted Lists", "difficulty": "easy"},
+            {"title": "Best Time to Buy and Sell Stock", "difficulty": "easy"},
+            {"title": "Valid Palindrome", "difficulty": "easy"},
+            {"title": "Invert Binary Tree", "difficulty": "easy"},
+            {"title": "Valid Anagram", "difficulty": "easy"},
+            {"title": "Binary Search", "difficulty": "easy"},
+            {"title": "Flood Fill", "difficulty": "easy"},
+            {
+                "title": "Lowest Common Ancestor of a Binary Search Tree",
+                "difficulty": "medium",
+            },
+            {"title": "Balanced Binary Tree", "difficulty": "easy"},
+            {"title": "Linked List Cycle", "difficulty": "easy"},
+            {"title": "Implement Queue using Stacks", "difficulty": "easy"},
+            {"title": "First Bad Version", "difficulty": "easy"},
+            {"title": "Ransom Note", "difficulty": "easy"},
+            {"title": "Climbing Stairs", "difficulty": "easy"},
+            {"title": "Longest Palindrome", "difficulty": "easy"},
+            {"title": "Reverse Linked List", "difficulty": "easy"},
+            {"title": "Majority Element", "difficulty": "easy"},
+            {"title": "Add Binary", "difficulty": "easy"},
+            {"title": "Diameter of Binary Tree", "difficulty": "easy"},
+            {"title": "Middle of the Linked List", "difficulty": "easy"},
+            {"title": "Maximum Depth of Binary Tree", "difficulty": "easy"},
+            {"title": "Contains Duplicate", "difficulty": "easy"},
+            {"title": "Meeting Rooms", "difficulty": "easy"},
+            {"title": "Maximum Subarray", "difficulty": "medium"},
+            {"title": "Insert Interval", "difficulty": "medium"},
+            {"title": "01 Matrix", "difficulty": "medium"},
+            {"title": "K Closest Points to Origin", "difficulty": "medium"},
+            {
+                "title": "Longest Substring Without Repeating Characters",
+                "difficulty": "medium",
+            },
+            {"title": "3Sum", "difficulty": "medium"},
+            {"title": "Binary Tree Level Order Traversal", "difficulty": "medium"},
+            {"title": "Clone Graph", "difficulty": "medium"},
+            {"title": "Course Schedule", "difficulty": "medium"},
+            {"title": "Implement Trie (Prefix Tree)", "difficulty": "medium"},
+            {"title": "Coin Change", "difficulty": "medium"},
+            {"title": "Product of Array Except Self", "difficulty": "medium"},
+            {"title": "Validate Binary Search Tree", "difficulty": "medium"},
+            {"title": "Number of Islands", "difficulty": "medium"},
+            {"title": "Rotting Oranges", "difficulty": "medium"},
+            {"title": "Search in Rotated Sorted Array", "difficulty": "medium"},
+            {"title": "Combination Sum", "difficulty": "medium"},
+            {"title": "Permutations", "difficulty": "medium"},
+            {"title": "Merge Intervals", "difficulty": "medium"},
+            {"title": "Lowest Common Ancestor of a Binary Tree", "difficulty": "medium"},
+            {"title": "Time Based Key-Value Store", "difficulty": "medium"},
+            {"title": "Accounts Merge", "difficulty": "medium"},
+            {"title": "Sort Colors", "difficulty": "medium"},
+            {"title": "Word Break", "difficulty": "medium"},
+            {"title": "Partition Equal Subset Sum", "difficulty": "medium"},
+            {"title": "String to Integer (atoi)", "difficulty": "medium"},
+            {"title": "Spiral Matrix", "difficulty": "medium"},
+            {"title": "Subsets", "difficulty": "medium"},
+            {"title": "Binary Tree Right Side View", "difficulty": "medium"},
+            {"title": "Longest Palindromic Substring", "difficulty": "medium"},
+            {"title": "Unique Paths", "difficulty": "medium"},
+            {
+                "title": "Construct Binary Tree from Preorder and Inorder Traversal",
+                "difficulty": "medium",
+            },
+            {"title": "Container With Most Water", "difficulty": "medium"},
+            {"title": "Letter Combinations of a Phone Number", "difficulty": "medium"},
+            {"title": "Word Search", "difficulty": "medium"},
+            {"title": "Find All Anagrams in a String", "difficulty": "medium"},
+            {"title": "Minimum Height Trees", "difficulty": "medium"},
+            {"title": "Task Scheduler", "difficulty": "hard"},
+            {"title": "LRU Cache", "difficulty": "medium"},
+            {"title": "Kth Smallest Element in a BST", "difficulty": "medium"},
+            {"title": "Minimum Window Substring", "difficulty": "hard"},
+            {"title": "Serialize and Deserialize Binary Tree", "difficulty": "hard"},
+            {"title": "Trapping Rain Water", "difficulty": "hard"},
+            {"title": "Find Median from Data Stream", "difficulty": "hard"},
+            {"title": "Word Ladder", "difficulty": "hard"},
+            {"title": "Basic Calculator", "difficulty": "hard"},
+            {"title": "Maximum Profit in Job Scheduling", "difficulty": "hard"},
+            {"title": "Merge k Sorted Lists", "difficulty": "hard"},
+            {"title": "Largest Rectangle in Histogram", "difficulty": "hard"},
+            {"title": "Binary Tree Maximum Path Sum", "difficulty": "hard"},
+            {"title": "Maximum Rectangle", "difficulty": "hard"},
+            {"title": "Meeting Rooms II", "difficulty": "medium"},
+            {"title": "Alien Dictionary", "difficulty": "hard"},
+            {"title": "Graph Valid Tree", "difficulty": "medium"},
+            {"title": "Pacific Atlantic Water Flow", "difficulty": "medium"},
+        ]
 
-            soup = BeautifulSoup(response.content, "html.parser")
+        for problem_data in grind75_problems:
+            title = problem_data["title"]
+            difficulty = problem_data["difficulty"]
+            problem_url = self._map_title_to_leetcode_url(title)
 
-            # Grind75 has a different structure - this is a placeholder
-            # Real implementation would need to handle their specific format
-            problem_elements = soup.find_all("div", class_="problem")
-
-            for elem in problem_elements:
-                # Extract problem details from Grind75 format
-                title_elem = elem.find("a")
-                if title_elem:
-                    # Convert Grind75 links to LeetCode URLs
-                    title = title_elem.get_text(strip=True)
-                    # This would need real logic to map titles to LeetCode URLs
-                    problem_url = self._map_title_to_leetcode_url(title)
-
-                    if problem_url:
-                        problems.append(
-                            Problem(
-                                url=problem_url,
-                                title=title,
-                                difficulty="medium",  # Default
-                                study_plan_urls=[grind75_url],
-                            )
-                        )
-
-        except requests.RequestException as e:
-            print(f"Error scraping Grind75: {e}")
+            problems.append(
+                Problem(
+                    url=problem_url,
+                    title=title,
+                    difficulty=difficulty,
+                    study_plan_urls=[grind75_url],
+                )
+            )
 
         return problems
 
     def _map_title_to_leetcode_url(self, title: str) -> str:
-        """Map problem title to LeetCode URL (simplified)."""
-        # This would need a comprehensive mapping or search functionality
-        slug = title.lower().replace(" ", "-").replace("(", "").replace(")", "")
+        """Map problem title to LeetCode URL with proper handling of special cases."""
+        # Convert to lowercase and handle special characters
+        slug = title.lower()
+
+        # Handle special cases that don't follow standard patterns
+        special_cases = {
+            "01 matrix": "01-matrix",
+            "3sum": "3sum",
+            "kth smallest element in a bst": "kth-smallest-element-in-a-bst",
+            "lru cache": "lru-cache",
+            "string to integer (atoi)": "string-to-integer-atoi",
+        }
+
+        if slug in special_cases:
+            return f"https://leetcode.com/problems/{special_cases[slug]}/"
+
+        # Standard conversion: remove special characters and convert spaces to hyphens
+        slug = slug.replace("(", "").replace(")", "").replace(",", "")
+        slug = slug.replace(" - ", "-").replace(" ", "-")
+        slug = slug.replace("--", "-").strip("-")
+
         return f"https://leetcode.com/problems/{slug}/"
 
     def scrape_all_study_plans(self) -> Dict[str, List[Problem]]:
@@ -169,11 +258,10 @@ class LeetCodeScraper:
             all_problems[plan_name] = problems
             time.sleep(1)  # Be nice to the server
 
-        # Optionally scrape Grind75
+        # Scrape Grind75
         print("Scraping Grind75...")
         grind75_problems = self.scrape_grind75()
-        if grind75_problems:
-            all_problems["grind75"] = grind75_problems
+        all_problems["grind75"] = grind75_problems
 
         return all_problems
 

@@ -33,7 +33,7 @@ def create_parser() -> argparse.ArgumentParser:
     )
     choose_parser.add_argument(
         "--study-plan",
-        help="Filter by study plan (leetcode-75, top-interview-150)",
+        help="Filter by study plan (leetcode-75, top-interview-150, grind75)",
     )
 
     # Review command
