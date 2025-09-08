@@ -168,7 +168,7 @@ def list_grind75_completed_titles() -> None:
         done = bool(local and local.is_completed)
         if done:
             completed_count += 1
-        check = "✓" if done else " "
+        check = "✅" if done else " "
         title = local.title if local else p.title
         print(f"{check} {idx}. {title} ({p.url})")
 
