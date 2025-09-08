@@ -11,6 +11,7 @@ from .commands import (
     review_problem,
     setup_auth,
     show_progress,
+    show_progress_verbose,
     sync_submissions,
     list_grind75_completed_titles,  # add this
     refresh_problems,  # add this
@@ -65,7 +66,21 @@ def create_parser() -> argparse.ArgumentParser:
     )
 
     # Progress command
-    subparsers.add_parser("progress", help="Show progress on study plans")
+    progress_parser = subparsers.add_parser(
+        "progress", help="Show progress on study plans"
+    )
+    progress_parser.add_argument(
+        "-v",
+        "--verbose",
+        action="store_true",
+        help="Show checklist view (in plan order) with completion marks",
+    )
+    progress_parser.add_argument(
+        "study_plan",
+        nargs="?",
+        choices=["leetcode-75", "top-interview-150", "grind75"],
+        help="Optional: limit to a single study plan",
+    )
 
     # Mark complete command
     mark_parser = subparsers.add_parser(
@@ -120,7 +135,10 @@ def main() -> int:
         elif args.command == "override-difficulty":
             override_difficulty(args.url, args.difficulty)
         elif args.command == "progress":
-            show_progress()
+            if getattr(args, "verbose", False):
+                show_progress_verbose(getattr(args, "study_plan", None))
+            else:
+                show_progress()
         elif args.command == "mark-complete":
             mark_complete(args.url, args.date)
         elif args.command == "grind75-completed":

@@ -166,6 +166,50 @@ def show_progress() -> None:
         print()
 
 
+def show_progress_verbose(study_plan: Optional[str] = None) -> None:
+    """Verbose checklist view for all or a specific study plan."""
+    storage = ProblemStorage()
+    _ensure_problems_loaded(storage)
+    problems = storage.load_problems()
+    scraper = LeetCodeScraper()
+
+    if study_plan:
+        if study_plan not in STUDY_PLANS:
+            print(f"Unknown study plan: {study_plan}")
+            print(f"Available plans: {', '.join(STUDY_PLANS.keys())}")
+            return
+        plans = [study_plan]
+    else:
+        plans = list(STUDY_PLANS.keys())
+
+    for plan in plans:
+        print(f"{plan} checklist:")
+        print("-" * 50)
+
+        try:
+            if plan == "grind75":
+                plan_problems = scraper.scrape_grind75()
+            else:
+                plan_problems = scraper.scrape_leetcode_study_plan(plan, STUDY_PLANS[plan])
+        except Exception as exc:  # pragma: no cover
+            print(f"Error scraping {plan}: {exc}")
+            print()
+            continue
+
+        completed_count = 0
+        total = len(plan_problems)
+        for idx, p in enumerate(plan_problems, start=1):
+            local = problems.get(p.url)
+            done = bool(local and local.is_completed)
+            if done:
+                completed_count += 1
+            check = "✅" if done else " "
+            title = local.title if local else p.title
+            print(f"{check} {idx}. {title} ({p.url})")
+
+        print(f"\nTotal completed in {plan}: {completed_count}/{total}\n")
+
+
 def list_grind75_completed_titles() -> None:
     """List all Grind75 problems in order with a checkmark for completed ones."""
     storage = ProblemStorage()
