@@ -22,7 +22,7 @@ class LeetCodeSync:
 
         query = {
             "query": """
-            query userSubmissions($offset: Int, $limit: Int) {
+            query submissionList($offset: Int, $limit: Int) {
                 submissionList(offset: $offset, limit: $limit) {
                     submissions {
                         id
@@ -39,7 +39,6 @@ class LeetCodeSync:
                         __typename
                     }
                     hasNext
-                    totalSubmissions
                 }
             }
             """,
