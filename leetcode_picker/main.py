@@ -11,6 +11,7 @@ from .commands import (
     review_problem,
     setup_auth,
     show_progress,
+    sync_submissions,
 )
 
 
@@ -76,6 +77,9 @@ def create_parser() -> argparse.ArgumentParser:
     # Auth setup command
     subparsers.add_parser("auth", help="Set up LeetCode authentication")
 
+    # Sync command
+    subparsers.add_parser("sync", help="Sync submission history from LeetCode")
+
     return parser
 
 
@@ -101,6 +105,8 @@ def main() -> int:
             mark_complete(args.url, args.date)
         elif args.command == "auth":
             setup_auth()
+        elif args.command == "sync":
+            sync_submissions()
         else:
             print(f"Unknown command: {args.command}", file=sys.stderr)
             return 1

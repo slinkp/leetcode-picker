@@ -8,6 +8,7 @@ from typing import Dict, Optional
 from .auth import LeetCodeAuth
 from .scraper import LeetCodeScraper, STUDY_PLANS
 from .storage import ProblemStorage
+from .sync import LeetCodeSync
 
 
 def choose_problem(difficulty: Optional[str], study_plan: Optional[str]) -> None:
@@ -239,6 +240,12 @@ def setup_auth() -> None:
     else:
         print("❌ Authentication failed. Please check your cookies and try again.")
         print("   Make sure you're logged into LeetCode and the cookies are correct.")
+
+
+def sync_submissions() -> None:
+    """Sync submission history from LeetCode."""
+    sync = LeetCodeSync()
+    sync.sync_submission_data()
 
 
 def _ensure_problems_loaded(storage: ProblemStorage) -> None:
