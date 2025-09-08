@@ -128,41 +128,38 @@ class LeetCodeScraper:
 
         soup = BeautifulSoup(resp.content, "html.parser")
 
-        # Select only LeetCode problem links in order
-        links = soup.select('a[href*="leetcode.com/problems/"]')
+        # Extract LeetCode problem URLs from raw HTML (Next.js JSON), preserve order
+        html = resp.text
 
         seen_slugs: set[str] = set()
         items: List[Dict[str, str]] = []
 
-        for a in links:
-            href = a.get("href") or ""
-            # BeautifulSoup can return a list for some attributes; normalize to str.
-            if isinstance(href, list):
-                href = href[0] if href else ""
-            title = a.get_text(strip=True)
-            if not href or not title:
-                continue
-
-            m = re.search(r"/problems/([^/?#]+)/?", href)
-            if not m:
-                continue
-            slug = m.group(1)
+        for m in re.finditer(
+            r"https?://leetcode\.com/problems/([a-z0-9\-]+)/?", html, re.I
+        ):
+            slug = m.group(1).lower()
             if slug in seen_slugs:
                 continue
             seen_slugs.add(slug)
 
-            # Normalize URL to match storage keys (with trailing slash)
             lc_url = f"https://leetcode.com/problems/{slug}/"
 
-            # Try to find nearby difficulty text (e.g., "Easy·15 mins")
-            difficulty = "medium"
-            diff_text = a.find_next(string=re.compile(r"^(Easy|Medium|Hard)\b"))
-            if diff_text is not None:
-                diff_str = str(diff_text).strip()
-                if diff_str:
-                    difficulty = diff_str.split()[0].lower()
+            # Derive a readable title from slug; local DB title is preferred later
+            title = slug.replace("-", " ").title()
+            title = (
+                title.replace("Ii", "II")
+                .replace("Iii", "III")
+                .replace("Iv", "IV")
+                .replace("Bst", "BST")
+                .replace("Lru", "LRU")
+                .replace("Atoi", "atoi")
+            )
+            if slug == "01-matrix":
+                title = "01 Matrix"
+            if slug == "3sum":
+                title = "3Sum"
 
-            items.append({"title": title, "url": lc_url, "difficulty": difficulty})
+            items.append({"title": title, "url": lc_url, "difficulty": "medium"})
 
         if len(items) != 75:
             print(f"Warning: Grind75 scrape yielded {len(items)} items (expected 75)")

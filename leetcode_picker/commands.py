@@ -165,7 +165,7 @@ def list_grind75_completed_titles() -> None:
     for idx, p in enumerate(grind_problems, start=1):
         local = problems.get(p.url)
         if local and local.is_completed:
-            completed.append((idx, p.title, p.url))
+            completed.append((idx, local.title, p.url))
 
     for idx, title, url in completed:
         print(f"{idx}. {title} ({url})")
