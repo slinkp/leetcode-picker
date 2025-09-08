@@ -4,16 +4,24 @@
 # which flake8
 # which black
 
+status=0
+
 echo Black...
-black $*
+if ! black $*; then
+  status=1
+fi
 echo Flake8...
-flake8 $* || exit 1
+if ! flake8 $*; then
+  status=1
+fi
 # Optional secrets scan (runs only if tools are installed)
 echo Secrets...
 if command -v detect-secrets >/dev/null 2>&1; then
   if [ -f .secrets.baseline ]; then
     echo "detect-secrets..."
-    detect-secrets-hook --baseline .secrets.baseline || exit 1
+    if ! detect-secrets-hook --baseline .secrets.baseline; then
+      status=1
+    fi
   else
     echo "detect-secrets not initialized (.secrets.baseline missing)."
     echo "Run: detect-secrets scan > .secrets.baseline to enable blocking."
@@ -21,8 +29,14 @@ if command -v detect-secrets >/dev/null 2>&1; then
 fi
 if command -v gitleaks >/dev/null 2>&1; then
   echo "gitleaks..."
-  gitleaks detect --no-git --exit-code 1 || exit 1
+  if ! gitleaks detect --no-git --exit-code 1; then
+    status=1
+  fi
 fi
 
 echo Mypy...
-mypy $* || exit 1
+if ! mypy $*; then
+  status=1
+fi
+
+exit $status
