@@ -41,6 +41,9 @@ leetcode-picker override-difficulty https://leetcode.com/problems/hard-problem/ 
 
 # List completed Grind75 titles (in Grind75 order)
 leetcode-picker grind75-completed
+
+# Force refresh of study plans and update local DB
+leetcode-picker refresh
 ```
 
 ## Commands
@@ -68,6 +71,11 @@ Shows completion percentages for each study plan.
 Outputs the titles (with LeetCode URLs) of your completed problems in the same
 order as the Grind75 list, along with a completion summary. Use this to manually
 mark them complete on the Grind75 website.
+
+### `refresh` - Re-scrape study plans and update local database
+Forces a refresh of the local problem database by scraping all configured study
+plans again. This merges study plan URLs into existing problems and preserves
+your completion data.
 
 ## Data Storage
 
