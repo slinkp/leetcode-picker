@@ -5,20 +5,23 @@ import requests
 import json
 from bs4 import BeautifulSoup
 
+
 def test_grind75_approaches():
     """Test different approaches to get Grind75 problem data."""
-    
+
     session = requests.Session()
-    session.headers.update({
-        "User-Agent": (
-            "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) "
-            "AppleWebKit/537.36 (KHTML, like Gecko) "
-            "Chrome/91.0.4472.124 Safari/537.36"
-        ),
-        "Accept": "application/json, text/plain, */*",
-        "Accept-Language": "en-US,en;q=0.9",
-    })
-    
+    session.headers.update(
+        {
+            "User-Agent": (
+                "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) "
+                "AppleWebKit/537.36 (KHTML, like Gecko) "
+                "Chrome/91.0.4472.124 Safari/537.36"
+            ),
+            "Accept": "application/json, text/plain, */*",
+            "Accept-Language": "en-US,en;q=0.9",
+        }
+    )
+
     # Approach 1: Check if there's an API endpoint
     print("=== Approach 1: Look for API endpoints ===")
     api_urls = [
@@ -27,28 +30,30 @@ def test_grind75_approaches():
         "https://www.techinterviewhandbook.org/_next/static/chunks/pages/grind75.js",
         "https://api.techinterviewhandbook.org/grind75",
     ]
-    
+
     for url in api_urls:
         try:
             response = session.get(url)
             print(f"{url}: {response.status_code}")
             if response.status_code == 200:
-                content_type = response.headers.get('content-type', '')
+                content_type = response.headers.get("content-type", "")
                 print(f"  Content-Type: {content_type}")
-                if 'json' in content_type:
+                if "json" in content_type:
                     try:
                         data = response.json()
-                        print(f"  JSON keys: {list(data.keys()) if isinstance(data, dict) else 'List with ' + str(len(data)) + ' items'}")
+                        print(
+                            f"  JSON keys: {list(data.keys()) if isinstance(data, dict) else 'List with ' + str(len(data)) + ' items'}"
+                        )
                     except:
                         print("  Failed to parse JSON")
                 else:
                     print(f"  Content length: {len(response.text)}")
         except Exception as e:
             print(f"{url}: Error - {e}")
-    
+
     # Approach 2: Use a known list of Grind75 problems
     print("\n=== Approach 2: Use known Grind75 problem list ===")
-    
+
     # This is the canonical Grind75 list that I can hardcode
     grind75_problems = [
         {"title": "Two Sum", "difficulty": "Easy"},
@@ -64,7 +69,10 @@ def test_grind75_approaches():
         {"title": "Insert Interval", "difficulty": "Medium"},
         {"title": "01 Matrix", "difficulty": "Medium"},
         {"title": "K Closest Points to Origin", "difficulty": "Medium"},
-        {"title": "Longest Substring Without Repeating Characters", "difficulty": "Medium"},
+        {
+            "title": "Longest Substring Without Repeating Characters",
+            "difficulty": "Medium",
+        },
         {"title": "3Sum", "difficulty": "Medium"},
         {"title": "Binary Tree Level Order Traversal", "difficulty": "Medium"},
         {"title": "Clone Graph", "difficulty": "Medium"},
@@ -91,7 +99,10 @@ def test_grind75_approaches():
         {"title": "Binary Tree Right Side View", "difficulty": "Medium"},
         {"title": "Longest Palindromic Substring", "difficulty": "Medium"},
         {"title": "Unique Paths", "difficulty": "Medium"},
-        {"title": "Construct Binary Tree from Preorder and Inorder Traversal", "difficulty": "Medium"},
+        {
+            "title": "Construct Binary Tree from Preorder and Inorder Traversal",
+            "difficulty": "Medium",
+        },
         {"title": "Container With Most Water", "difficulty": "Medium"},
         {"title": "Letter Combinations of a Phone Number", "difficulty": "Medium"},
         {"title": "Word Search", "difficulty": "Medium"},
@@ -110,9 +121,9 @@ def test_grind75_approaches():
         {"title": "Merge k Sorted Lists", "difficulty": "Hard"},
         {"title": "Largest Rectangle in Histogram", "difficulty": "Hard"},
     ]
-    
+
     print(f"Hardcoded Grind75 list has {len(grind75_problems)} problems")
-    
+
     # Convert titles to likely LeetCode URLs
     def title_to_leetcode_url(title):
         """Convert problem title to likely LeetCode URL."""
@@ -122,13 +133,14 @@ def test_grind75_approaches():
         slug = slug.replace(" - ", "-").replace(" ", "-")
         slug = slug.replace("--", "-")
         return f"https://leetcode.com/problems/{slug}/"
-    
+
     print("\nSample URLs:")
     for problem in grind75_problems[:5]:
         url = title_to_leetcode_url(problem["title"])
         print(f"  {problem['title']} -> {url}")
-    
+
     return grind75_problems
+
 
 if __name__ == "__main__":
     test_grind75_approaches()
