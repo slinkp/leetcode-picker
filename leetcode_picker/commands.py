@@ -148,6 +148,31 @@ def show_progress() -> None:
         print()
 
 
+def list_grind75_completed_titles() -> None:
+    """Print completed problem titles in Grind75 order for manual marking."""
+    storage = ProblemStorage()
+    _ensure_problems_loaded(storage)
+    problems = storage.load_problems()
+
+    scraper = LeetCodeScraper()
+    try:
+        grind_problems = scraper.scrape_grind75()
+    except Exception as exc:  # pragma: no cover
+        print(f"Error scraping Grind75: {exc}")
+        return
+
+    completed: list[tuple[int, str]] = []
+    for idx, p in enumerate(grind_problems, start=1):
+        local = problems.get(p.url)
+        if local and local.is_completed:
+            completed.append((idx, p.title))
+
+    for idx, title in completed:
+        print(f"{idx}. {title}")
+
+    print(f"\nTotal completed in Grind75: {len(completed)}/{len(grind_problems)}")
+
+
 def mark_complete(url: str, date: Optional[str]) -> None:
     """Mark a problem as completed."""
     storage = ProblemStorage()

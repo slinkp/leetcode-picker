@@ -12,6 +12,7 @@ from .commands import (
     setup_auth,
     show_progress,
     sync_submissions,
+    list_grind75_completed_titles,  # add this
 )
 
 
@@ -74,6 +75,12 @@ def create_parser() -> argparse.ArgumentParser:
         "--date", help="Completion date (YYYY-MM-DD, default: today)"
     )
 
+    # Grind75 completed command
+    subparsers.add_parser(
+        "grind75-completed",
+        help="List completed problem titles in Grind75 order",
+    )
+
     # Auth setup command
     subparsers.add_parser("auth", help="Set up LeetCode authentication")
 
@@ -103,6 +110,8 @@ def main() -> int:
             show_progress()
         elif args.command == "mark-complete":
             mark_complete(args.url, args.date)
+        elif args.command == "grind75-completed":
+            list_grind75_completed_titles()
         elif args.command == "auth":
             setup_auth()
         elif args.command == "sync":

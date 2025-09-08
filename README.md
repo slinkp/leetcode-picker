@@ -38,6 +38,9 @@ leetcode-picker review --weeks-ago 4
 
 # Override difficulty for a problem
 leetcode-picker override-difficulty https://leetcode.com/problems/hard-problem/ easy
+
+# List completed Grind75 titles (in Grind75 order)
+leetcode-picker grind75-completed
 ```
 
 ## Commands
@@ -60,6 +63,11 @@ leetcode-picker override-difficulty https://leetcode.com/problems/hard-problem/ 
 
 ### `progress` - Show progress on study plans
 Shows completion percentages for each study plan.
+
+### `grind75-completed` - List completed Grind75 titles in order
+Outputs the titles of your completed problems in the same order as the Grind75
+list, along with a completion summary. Use this to manually mark them complete
+on the Grind75 website.
 
 ## Data Storage
 
