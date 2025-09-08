@@ -5,6 +5,7 @@ from collections import defaultdict
 from datetime import datetime, timedelta
 from typing import Dict, Optional
 
+from .auth import LeetCodeAuth
 from .scraper import LeetCodeScraper, STUDY_PLANS
 from .storage import ProblemStorage
 
@@ -171,6 +172,67 @@ def mark_complete(url: str, date: Optional[str]) -> None:
     print(f"Marked {problem.title} as completed")
     print(f"  Date: {problem.last_pass_date}")
     print(f"  Completions: {old_completions} → {problem.completions}")
+
+
+def setup_auth() -> None:
+    """Set up LeetCode authentication by guiding user through cookie extraction."""
+    auth = LeetCodeAuth()
+
+    print("🔐 LeetCode Authentication Setup")
+    print("=" * 40)
+    print()
+    print("To authenticate with LeetCode, you need to extract cookies from your browser.")
+    print()
+    print("📋 Step-by-step instructions:")
+    print()
+    print("1. Open your browser and go to https://leetcode.com")
+    print("2. Make sure you're logged in (you should see your profile)")
+    print("3. Right-click anywhere on the page and select 'Inspect' (or press F12)")
+    print("4. Go to the 'Network' tab in the developer tools")
+    print("5. Refresh the page (F5 or Ctrl+R)")
+    print("6. Look for a request to 'leetcode.com' in the network requests")
+    print("7. Click on that request and look at the 'Request Headers' section")
+    print("8. Find the 'Cookie' header and copy the values for:")
+    print("   - LEETCODE_SESSION (long string starting with 'eyJ')")
+    print("   - csrftoken (shorter alphanumeric string)")
+    print()
+    print(
+        "Alternatively, you can go to chrome://settings/cookies/detail?site=leetcode.com"
+    )
+    print("and find the LEETCODE_SESSION and csrftoken values there.")
+    print()
+
+    # Get cookies from user
+    print("Please enter your cookies:")
+    session_cookie = input("LEETCODE_SESSION: ").strip()
+    csrf_token = input("csrftoken: ").strip()
+
+    if not session_cookie or not csrf_token:
+        print("❌ Both cookies are required. Please try again.")
+        return
+
+    # Save cookies
+    auth.save_cookies(session_cookie, csrf_token)
+    print(f"✅ Cookies saved to {auth.auth_file}")
+
+    # Test authentication
+    print("\n🔍 Testing authentication...")
+    if auth.test_authentication():
+        user_info = auth.get_user_info()
+        if user_info:
+            username = user_info.get("username", "Unknown")
+            real_name = user_info.get("realName", "")
+            verified = "✓" if user_info.get("isVerified") else ""
+
+            print("✅ Authentication successful!")
+            print(f"   User: {username} {verified}")
+            if real_name:
+                print(f"   Name: {real_name}")
+        else:
+            print("✅ Authentication working, but couldn't fetch user info.")
+    else:
+        print("❌ Authentication failed. Please check your cookies and try again.")
+        print("   Make sure you're logged into LeetCode and the cookies are correct.")
 
 
 def _ensure_problems_loaded(storage: ProblemStorage) -> None:

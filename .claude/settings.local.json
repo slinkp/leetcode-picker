@@ -4,7 +4,9 @@
       "Bash(./black-flake8-mypy leetcode_picker/)",
       "Bash(pip install:*)",
       "Bash(python -m leetcode_picker.main:*)",
-      "Bash(leetcode-picker:*)"
+      "Bash(leetcode-picker:*)",
+      "Bash(./black-flake8-mypy .)",
+      "Bash(git add:*)"
     ],
     "deny": [],
     "ask": []

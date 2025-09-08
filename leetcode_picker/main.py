@@ -9,6 +9,7 @@ from .commands import (
     mark_complete,
     override_difficulty,
     review_problem,
+    setup_auth,
     show_progress,
 )
 
@@ -72,6 +73,9 @@ def create_parser() -> argparse.ArgumentParser:
         "--date", help="Completion date (YYYY-MM-DD, default: today)"
     )
 
+    # Auth setup command
+    subparsers.add_parser("auth", help="Set up LeetCode authentication")
+
     return parser
 
 
@@ -95,6 +99,8 @@ def main() -> int:
             show_progress()
         elif args.command == "mark-complete":
             mark_complete(args.url, args.date)
+        elif args.command == "auth":
+            setup_auth()
         else:
             print(f"Unknown command: {args.command}", file=sys.stderr)
             return 1
