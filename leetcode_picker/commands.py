@@ -273,12 +273,12 @@ def sync_submissions() -> None:
     sync.sync_submission_data()
 
 
-def refresh_problems() -> None:
+def refresh_problems(verbose: bool = False) -> None:
     """Force re-scrape of all study plans and update the database."""
     storage = ProblemStorage()
     print("Refreshing study plans (re-scrape)...")
     scraper = LeetCodeScraper()
-    scraper.update_problem_database(storage)
+    scraper.update_problem_database(storage, verbose=verbose)
     print("Refresh complete.")
 
 

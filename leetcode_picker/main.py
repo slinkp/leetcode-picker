@@ -83,9 +83,15 @@ def create_parser() -> argparse.ArgumentParser:
     )
 
     # Refresh command
-    subparsers.add_parser(
+    refresh_parser = subparsers.add_parser(
         "refresh",
         help="Force re-scrape study plans and update the local problem database",
+    )
+    refresh_parser.add_argument(
+        "-v",
+        "--verbose",
+        action="store_true",
+        help="Print verbose debug info while scraping (Grind75 only)",
     )
 
     # Auth setup command
@@ -120,7 +126,7 @@ def main() -> int:
         elif args.command == "grind75-completed":
             list_grind75_completed_titles()
         elif args.command == "refresh":
-            refresh_problems()
+            refresh_problems(args.verbose)
         elif args.command == "auth":
             setup_auth()
         elif args.command == "sync":

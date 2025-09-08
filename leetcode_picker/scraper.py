@@ -2,6 +2,7 @@
 
 import re
 import time
+import sys
 from typing import Dict, List
 
 import requests
@@ -109,7 +110,7 @@ class LeetCodeScraper:
 
         return problems
 
-    def scrape_grind75(self) -> List[Problem]:
+    def scrape_grind75(self, verbose: bool = False) -> List[Problem]:
         """Scrape Grind75 page (no grouping) in on-page order, deduped by URL."""
         problems: List[Problem] = []
         grind75_url = STUDY_PLANS["grind75"]
@@ -120,7 +121,14 @@ class LeetCodeScraper:
             fetch_url = f"{fetch_url}/?grouping=none"
 
         try:
+            if verbose:
+                print(f"[grind75] GET {fetch_url}", file=sys.stderr)
             resp = self.session.get(fetch_url)
+            if verbose:
+                print(
+                    f"[grind75] status={resp.status_code} bytes={len(resp.text)}",
+                    file=sys.stderr,
+                )
             resp.raise_for_status()
         except requests.RequestException as e:
             print(f"Error scraping grind75: {e}")
@@ -130,13 +138,21 @@ class LeetCodeScraper:
 
         # Extract LeetCode problem URLs from raw HTML (Next.js JSON), preserve order
         html = resp.text
+        if verbose:
+            snippet = html[:4000]
+            print("[grind75] html head snippet:", file=sys.stderr)
+            print(snippet, file=sys.stderr)
 
         seen_slugs: set[str] = set()
         items: List[Dict[str, str]] = []
 
-        for m in re.finditer(
-            r"https?://leetcode\.com/problems/([a-z0-9\-]+)/?", html, re.I
-        ):
+        pattern = r"https?://leetcode\.com/problems/([a-z0-9\-]+)/?"
+        total_occurrences = len(re.findall(pattern, html, flags=re.I))
+        if verbose:
+            print(f"[grind75] total link occurrences: {total_occurrences}",
+                  file=sys.stderr)
+
+        for m in re.finditer(pattern, html, re.I):
             slug = m.group(1).lower()
             if slug in seen_slugs:
                 continue
@@ -161,6 +177,13 @@ class LeetCodeScraper:
 
             items.append({"title": title, "url": lc_url, "difficulty": "medium"})
 
+        if verbose:
+            print(f"[grind75] unique slugs found: {len(seen_slugs)}", file=sys.stderr)
+            if items:
+                sample = [it["url"] for it in items[:15]]
+                print("[grind75] first URLs:", file=sys.stderr)
+                for u in sample:
+                    print(f"  {u}", file=sys.stderr)
         if len(items) != 75:
             print(f"Warning: Grind75 scrape yielded {len(items)} items (expected 75)")
 
@@ -200,7 +223,7 @@ class LeetCodeScraper:
 
         return f"https://leetcode.com/problems/{slug}/"
 
-    def scrape_all_study_plans(self) -> Dict[str, List[Problem]]:
+    def scrape_all_study_plans(self, verbose: bool = False) -> Dict[str, List[Problem]]:
         """Scrape all configured study plans."""
         all_problems = {}
 
@@ -213,14 +236,14 @@ class LeetCodeScraper:
 
         # Scrape Grind75
         print("Scraping Grind75...")
-        grind75_problems = self.scrape_grind75()
+        grind75_problems = self.scrape_grind75(verbose=verbose)
         all_problems["grind75"] = grind75_problems
 
         return all_problems
 
-    def update_problem_database(self, storage) -> None:
+    def update_problem_database(self, storage, verbose: bool = False) -> None:
         """Update the problem database with scraped data, merging overlapping problems."""
-        all_problems = self.scrape_all_study_plans()
+        all_problems = self.scrape_all_study_plans(verbose=verbose)
 
         # Collect all problems and merge overlaps
         merged_problems: Dict[str, Problem] = {}
