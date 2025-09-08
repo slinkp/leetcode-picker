@@ -3,6 +3,7 @@
 import random
 from collections import defaultdict
 from datetime import datetime, timedelta
+from urllib.parse import urlparse
 from typing import Dict, Optional
 
 from .auth import LeetCodeAuth
@@ -95,7 +96,26 @@ def override_difficulty(url: str, difficulty: str) -> None:
     """Override difficulty level for a problem."""
     storage = ProblemStorage()
 
-    problem = storage.get_problem(url)
+    # Normalize incoming URL to canonical LeetCode problem URL
+    canonical = _canonical_leetcode_problem_url(url) or url.rstrip("/")
+
+    # Try exact and trailing-slash variations
+    problem = storage.get_problem(canonical) or storage.get_problem(
+        canonical.rstrip("/")
+    )
+    if not problem and canonical.endswith("/"):
+        problem = storage.get_problem(canonical[:-1])
+
+    # Fallback: match by slug across all stored problems
+    if not problem:
+        problems = storage.load_problems()
+        target = _canonical_leetcode_problem_url(url)
+        if target:
+            for p in problems.values():
+                if _canonical_leetcode_problem_url(p.url) == target:
+                    problem = p
+                    break
+
     if not problem:
         print(f"Problem not found: {url}")
         print("Make sure the URL is correct and the problem is in the database.")
@@ -173,6 +193,19 @@ def list_grind75_completed_titles() -> None:
         print(f"{check} {idx}. {title} ({p.url})")
 
     print(f"\nTotal completed in Grind75: {completed_count}/{total}")
+
+
+def _canonical_leetcode_problem_url(url: str) -> Optional[str]:
+    """Return canonical https://leetcode.com/problems/<slug>/ URL from variants."""
+    parsed = urlparse(url)
+    path = parsed.path or ""
+    parts = [p for p in path.split("/") if p]
+    if "problems" in parts:
+        i = parts.index("problems")
+        if i + 1 < len(parts):
+            slug = parts[i + 1]
+            return f"https://leetcode.com/problems/{slug}/"
+    return None
 
 
 def mark_complete(url: str, date: Optional[str]) -> None:
