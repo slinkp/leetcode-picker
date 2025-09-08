@@ -160,9 +160,7 @@ class LeetCodeScraper:
             items.append({"title": title, "url": lc_url, "difficulty": difficulty})
 
         if len(items) != 75:
-            print(
-                f"Warning: Grind75 scrape yielded {len(items)} items (expected 75)"
-            )
+            print(f"Warning: Grind75 scrape yielded {len(items)} items (expected 75)")
 
         for it in items[:75]:
             problems.append(
