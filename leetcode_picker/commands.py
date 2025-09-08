@@ -161,14 +161,14 @@ def list_grind75_completed_titles() -> None:
         print(f"Error scraping Grind75: {exc}")
         return
 
-    completed: list[tuple[int, str]] = []
+    completed: list[tuple[int, str, str]] = []
     for idx, p in enumerate(grind_problems, start=1):
         local = problems.get(p.url)
         if local and local.is_completed:
-            completed.append((idx, p.title))
+            completed.append((idx, p.title, p.url))
 
-    for idx, title in completed:
-        print(f"{idx}. {title}")
+    for idx, title, url in completed:
+        print(f"{idx}. {title} ({url})")
 
     print(f"\nTotal completed in Grind75: {len(completed)}/{len(grind_problems)}")
 
