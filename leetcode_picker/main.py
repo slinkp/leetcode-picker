@@ -79,7 +79,7 @@ def create_parser() -> argparse.ArgumentParser:
     # Grind75 completed command
     subparsers.add_parser(
         "grind75-completed",
-        help="List completed problem titles in Grind75 order",
+        help="Show Grind75 checklist (✓ for completed) in order",
     )
 
     # Refresh command

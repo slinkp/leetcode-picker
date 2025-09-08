@@ -149,7 +149,7 @@ def show_progress() -> None:
 
 
 def list_grind75_completed_titles() -> None:
-    """Print completed problem titles in Grind75 order for manual marking."""
+    """List all Grind75 problems in order with a checkmark for completed ones."""
     storage = ProblemStorage()
     _ensure_problems_loaded(storage)
     problems = storage.load_problems()
@@ -161,16 +161,18 @@ def list_grind75_completed_titles() -> None:
         print(f"Error scraping Grind75: {exc}")
         return
 
-    completed: list[tuple[int, str, str]] = []
+    completed_count = 0
+    total = len(grind_problems)
     for idx, p in enumerate(grind_problems, start=1):
         local = problems.get(p.url)
-        if local and local.is_completed:
-            completed.append((idx, local.title, p.url))
+        done = bool(local and local.is_completed)
+        if done:
+            completed_count += 1
+        check = "✓" if done else " "
+        title = local.title if local else p.title
+        print(f"{check} {idx}. {title} ({p.url})")
 
-    for idx, title, url in completed:
-        print(f"{idx}. {title} ({url})")
-
-    print(f"\nTotal completed in Grind75: {len(completed)}/{len(grind_problems)}")
+    print(f"\nTotal completed in Grind75: {completed_count}/{total}")
 
 
 def mark_complete(url: str, date: Optional[str]) -> None:

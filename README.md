@@ -67,10 +67,9 @@ leetcode-picker refresh
 ### `progress` - Show progress on study plans
 Shows completion percentages for each study plan.
 
-### `grind75-completed` - List completed Grind75 titles in order
-Outputs the titles (with LeetCode URLs) of your completed problems in the same
-order as the Grind75 list, along with a completion summary. Use this to manually
-mark them complete on the Grind75 website.
+### `grind75-completed` - Show Grind75 checklist in order
+Prints all Grind75 problems in order, prefixing a checkmark (✓) for problems
+you've completed. Includes LeetCode URLs and a completion summary.
 
 ### `refresh` - Re-scrape study plans and update local database
 Forces a refresh of the local problem database by scraping all configured study
