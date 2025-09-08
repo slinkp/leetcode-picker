@@ -286,8 +286,14 @@ class LeetCodeScraper:
                     print(f"  {u}", file=sys.stderr)
         if len(items) != 75:
             print(f"Warning: Grind75 scrape yielded {len(items)} items (expected 75)")
+            if verbose:
+                print(
+                    "[grind75] falling back to embedded canonical list",
+                    file=sys.stderr,
+                )
+            items = self._grind75_static_items()
 
-        for it in items[:75]:
+        for it in items:
             problems.append(
                 Problem(
                     url=it["url"],
@@ -299,6 +305,86 @@ class LeetCodeScraper:
 
         return problems
 
+    def _grind75_static_items(self) -> List[Dict[str, str]]:
+        """Return canonical Grind75 list (75 problems) in exact site order."""
+        return [
+            {"title": "Two Sum", "url": "https://leetcode.com/problems/two-sum/", "difficulty": "easy"},
+            {"title": "Valid Parentheses", "url": "https://leetcode.com/problems/valid-parentheses/", "difficulty": "easy"},
+            {"title": "Merge Two Sorted Lists", "url": "https://leetcode.com/problems/merge-two-sorted-lists/", "difficulty": "easy"},
+            {"title": "Best Time to Buy and Sell Stock", "url": "https://leetcode.com/problems/best-time-to-buy-and-sell-stock/", "difficulty": "easy"},
+            {"title": "Valid Palindrome", "url": "https://leetcode.com/problems/valid-palindrome/", "difficulty": "easy"},
+            {"title": "Invert Binary Tree", "url": "https://leetcode.com/problems/invert-binary-tree/", "difficulty": "easy"},
+            {"title": "Valid Anagram", "url": "https://leetcode.com/problems/valid-anagram/", "difficulty": "easy"},
+            {"title": "Binary Search", "url": "https://leetcode.com/problems/binary-search/", "difficulty": "easy"},
+            {"title": "Flood Fill", "url": "https://leetcode.com/problems/flood-fill/", "difficulty": "easy"},
+            {"title": "Lowest Common Ancestor of a Binary Search Tree", "url": "https://leetcode.com/problems/lowest-common-ancestor-of-a-binary-search-tree/", "difficulty": "easy"},
+            {"title": "Balanced Binary Tree", "url": "https://leetcode.com/problems/balanced-binary-tree/", "difficulty": "easy"},
+            {"title": "Linked List Cycle", "url": "https://leetcode.com/problems/linked-list-cycle/", "difficulty": "easy"},
+            {"title": "Implement Queue using Stacks", "url": "https://leetcode.com/problems/implement-queue-using-stacks/", "difficulty": "easy"},
+            {"title": "First Bad Version", "url": "https://leetcode.com/problems/first-bad-version/", "difficulty": "easy"},
+            {"title": "Ransom Note", "url": "https://leetcode.com/problems/ransom-note/", "difficulty": "easy"},
+            {"title": "Climbing Stairs", "url": "https://leetcode.com/problems/climbing-stairs/", "difficulty": "easy"},
+            {"title": "Longest Palindrome", "url": "https://leetcode.com/problems/longest-palindrome/", "difficulty": "easy"},
+            {"title": "Reverse Linked List", "url": "https://leetcode.com/problems/reverse-linked-list/", "difficulty": "easy"},
+            {"title": "Majority Element", "url": "https://leetcode.com/problems/majority-element/", "difficulty": "easy"},
+            {"title": "Add Binary", "url": "https://leetcode.com/problems/add-binary/", "difficulty": "easy"},
+            {"title": "Diameter of Binary Tree", "url": "https://leetcode.com/problems/diameter-of-binary-tree/", "difficulty": "easy"},
+            {"title": "Middle of the Linked List", "url": "https://leetcode.com/problems/middle-of-the-linked-list/", "difficulty": "easy"},
+            {"title": "Maximum Depth of Binary Tree", "url": "https://leetcode.com/problems/maximum-depth-of-binary-tree/", "difficulty": "easy"},
+            {"title": "Contains Duplicate", "url": "https://leetcode.com/problems/contains-duplicate/", "difficulty": "easy"},
+            {"title": "Maximum Subarray", "url": "https://leetcode.com/problems/maximum-subarray/", "difficulty": "medium"},
+            {"title": "Insert Interval", "url": "https://leetcode.com/problems/insert-interval/", "difficulty": "medium"},
+            {"title": "01 Matrix", "url": "https://leetcode.com/problems/01-matrix/", "difficulty": "medium"},
+            {"title": "K Closest Points to Origin", "url": "https://leetcode.com/problems/k-closest-points-to-origin/", "difficulty": "medium"},
+            {"title": "Longest Substring Without Repeating Characters", "url": "https://leetcode.com/problems/longest-substring-without-repeating-characters/", "difficulty": "medium"},
+            {"title": "3Sum", "url": "https://leetcode.com/problems/3sum/", "difficulty": "medium"},
+            {"title": "Binary Tree Level Order Traversal", "url": "https://leetcode.com/problems/binary-tree-level-order-traversal/", "difficulty": "medium"},
+            {"title": "Clone Graph", "url": "https://leetcode.com/problems/clone-graph/", "difficulty": "medium"},
+            {"title": "Evaluate Reverse Polish Notation", "url": "https://leetcode.com/problems/evaluate-reverse-polish-notation/", "difficulty": "medium"},
+            {"title": "Course Schedule", "url": "https://leetcode.com/problems/course-schedule/", "difficulty": "medium"},
+            {"title": "Implement Trie (Prefix Tree)", "url": "https://leetcode.com/problems/implement-trie-prefix-tree/", "difficulty": "medium"},
+            {"title": "Coin Change", "url": "https://leetcode.com/problems/coin-change/", "difficulty": "medium"},
+            {"title": "Product of Array Except Self", "url": "https://leetcode.com/problems/product-of-array-except-self/", "difficulty": "medium"},
+            {"title": "Min Stack", "url": "https://leetcode.com/problems/min-stack/", "difficulty": "medium"},
+            {"title": "Validate Binary Search Tree", "url": "https://leetcode.com/problems/validate-binary-search-tree/", "difficulty": "medium"},
+            {"title": "Number of Islands", "url": "https://leetcode.com/problems/number-of-islands/", "difficulty": "medium"},
+            {"title": "Rotting Oranges", "url": "https://leetcode.com/problems/rotting-oranges/", "difficulty": "medium"},
+            {"title": "Search in Rotated Sorted Array", "url": "https://leetcode.com/problems/search-in-rotated-sorted-array/", "difficulty": "medium"},
+            {"title": "Combination Sum", "url": "https://leetcode.com/problems/combination-sum/", "difficulty": "medium"},
+            {"title": "Permutations", "url": "https://leetcode.com/problems/permutations/", "difficulty": "medium"},
+            {"title": "Merge Intervals", "url": "https://leetcode.com/problems/merge-intervals/", "difficulty": "medium"},
+            {"title": "Lowest Common Ancestor of a Binary Tree", "url": "https://leetcode.com/problems/lowest-common-ancestor-of-a-binary-tree/", "difficulty": "medium"},
+            {"title": "Time Based Key-Value Store", "url": "https://leetcode.com/problems/time-based-key-value-store/", "difficulty": "medium"},
+            {"title": "Accounts Merge", "url": "https://leetcode.com/problems/accounts-merge/", "difficulty": "medium"},
+            {"title": "Sort Colors", "url": "https://leetcode.com/problems/sort-colors/", "difficulty": "medium"},
+            {"title": "Word Break", "url": "https://leetcode.com/problems/word-break/", "difficulty": "medium"},
+            {"title": "Partition Equal Subset Sum", "url": "https://leetcode.com/problems/partition-equal-subset-sum/", "difficulty": "medium"},
+            {"title": "String to Integer (atoi)", "url": "https://leetcode.com/problems/string-to-integer-atoi/", "difficulty": "medium"},
+            {"title": "Spiral Matrix", "url": "https://leetcode.com/problems/spiral-matrix/", "difficulty": "medium"},
+            {"title": "Subsets", "url": "https://leetcode.com/problems/subsets/", "difficulty": "medium"},
+            {"title": "Binary Tree Right Side View", "url": "https://leetcode.com/problems/binary-tree-right-side-view/", "difficulty": "medium"},
+            {"title": "Longest Palindromic Substring", "url": "https://leetcode.com/problems/longest-palindromic-substring/", "difficulty": "medium"},
+            {"title": "Unique Paths", "url": "https://leetcode.com/problems/unique-paths/", "difficulty": "medium"},
+            {"title": "Construct Binary Tree from Preorder and Inorder Traversal", "url": "https://leetcode.com/problems/construct-binary-tree-from-preorder-and-inorder-traversal/", "difficulty": "medium"},
+            {"title": "Container With Most Water", "url": "https://leetcode.com/problems/container-with-most-water/", "difficulty": "medium"},
+            {"title": "Letter Combinations of a Phone Number", "url": "https://leetcode.com/problems/letter-combinations-of-a-phone-number/", "difficulty": "medium"},
+            {"title": "Word Search", "url": "https://leetcode.com/problems/word-search/", "difficulty": "medium"},
+            {"title": "Find All Anagrams in a String", "url": "https://leetcode.com/problems/find-all-anagrams-in-a-string/", "difficulty": "medium"},
+            {"title": "Minimum Height Trees", "url": "https://leetcode.com/problems/minimum-height-trees/", "difficulty": "medium"},
+            {"title": "Task Scheduler", "url": "https://leetcode.com/problems/task-scheduler/", "difficulty": "medium"},
+            {"title": "LRU Cache", "url": "https://leetcode.com/problems/lru-cache/", "difficulty": "medium"},
+            {"title": "Kth Smallest Element in a BST", "url": "https://leetcode.com/problems/kth-smallest-element-in-a-binary-search-tree/", "difficulty": "medium"},
+            {"title": "Minimum Window Substring", "url": "https://leetcode.com/problems/minimum-window-substring/", "difficulty": "hard"},
+            {"title": "Serialize and Deserialize Binary Tree", "url": "https://leetcode.com/problems/serialize-and-deserialize-binary-tree/", "difficulty": "hard"},
+            {"title": "Trapping Rain Water", "url": "https://leetcode.com/problems/trapping-rain-water/", "difficulty": "hard"},
+            {"title": "Find Median from Data Stream", "url": "https://leetcode.com/problems/find-median-from-data-stream/", "difficulty": "hard"},
+            {"title": "Word Ladder", "url": "https://leetcode.com/problems/word-ladder/", "difficulty": "hard"},
+            {"title": "Basic Calculator", "url": "https://leetcode.com/problems/basic-calculator/", "difficulty": "hard"},
+            {"title": "Maximum Profit in Job Scheduling", "url": "https://leetcode.com/problems/maximum-profit-in-job-scheduling/", "difficulty": "hard"},
+            {"title": "Merge k Sorted Lists", "url": "https://leetcode.com/problems/merge-k-sorted-lists/", "difficulty": "hard"},
+            {"title": "Largest Rectangle in Histogram", "url": "https://leetcode.com/problems/largest-rectangle-in-histogram/", "difficulty": "hard"},
+        ]
+    
     def _map_title_to_leetcode_url(self, title: str) -> str:
         """Map problem title to LeetCode URL with proper handling of special cases."""
         # Convert to lowercase and handle special characters
