@@ -1,2 +1,6 @@
 .envrc
 *egg-info
+.aider.tags*
+.aider.*history*
+.aider.conf.yml
+
