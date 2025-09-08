@@ -100,9 +100,7 @@ def override_difficulty(url: str, difficulty: str) -> None:
     canonical = _canonical_leetcode_problem_url(url) or url.rstrip("/")
 
     # Try exact and trailing-slash variations
-    problem = storage.get_problem(canonical) or storage.get_problem(
-        canonical.rstrip("/")
-    )
+    problem = storage.get_problem(canonical) or storage.get_problem(canonical.rstrip("/"))
     if not problem and canonical.endswith("/"):
         problem = storage.get_problem(canonical[:-1])
 
