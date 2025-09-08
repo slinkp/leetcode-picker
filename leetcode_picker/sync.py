@@ -63,7 +63,7 @@ class LeetCodeSync:
         """Get all user submissions by paginating through results."""
         all_submissions = []
         offset = 0
-        limit = 100
+        limit = 50  # LeetCode seems to ignore this and returns ~20 per page
 
         print("Fetching submission history...")
 
@@ -73,6 +73,9 @@ class LeetCodeSync:
                 break
 
             submissions = result["submissions"]
+            if not submissions:  # Empty list means we're done
+                break
+
             all_submissions.extend(submissions)
 
             print(f"Fetched {len(all_submissions)} submissions so far...")
@@ -80,7 +83,8 @@ class LeetCodeSync:
             if not result.get("hasNext", False):
                 break
 
-            offset += limit
+            # LeetCode returns ~20 per page regardless of limit, so increment by actual count
+            offset += len(submissions)
 
         print(f"Total submissions found: {len(all_submissions)}")
         return all_submissions
