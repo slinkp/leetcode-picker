@@ -4,27 +4,29 @@ A command line tool which will give me a random problem to work on and track my 
 Let's use python 3.
 The virtualenv is in `/Users/paul/src/leetcode-picker/.direnv/python-3.13`
 
+## ✅ COMPLETED
+
 The problem list can be kept in a simple file. CVS is fine.
 Info to track:
-- URL
-- Title
-- Last pass date in YYYY-MM-DD format
-- Number of completions (passing submissions)
-- Number of submissions
-- Difficulty level
-- Study plan URL
-- Overridden difficulty level
+- ✅ URL
+- ✅ Title
+- ✅ Last pass date in YYYY-MM-DD format
+- ✅ Number of completions (passing submissions)
+- ✅ Number of submissions
+- ✅ Difficulty level
+- ✅ Study plan URL
+- ✅ Overridden difficulty level
 
-
-First, compile a master list from these 2 study plan URLs:
+✅ First, compile a master list from these 2 study plan URLs:
 https://leetcode.com/studyplan/leetcode-75/
 https://leetcode.com/studyplan/top-interview-150/
 
-Track problems from this list as well (optional because I'm not intending to complete this list, I'm just curious):
+✅ Track problems from this list as well (optional because I'm not intending to complete this list, I'm just curious):
 https://www.techinterviewhandbook.org/grind75/
 
-
 (Those two are tracked for me automatically on leetcode, BUT i don't like picking problems from there because it shows me the categories - which is a big spoiler - as well as the difficulty level.)
+
+## TODO: LeetCode Authentication (Optional Future Enhancement)
 
 Next, use my leetcode login to see which problems I've done.
 I don't care how you do this. Leetcode uses my github account via oauth
@@ -32,24 +34,33 @@ One way is to visit the URL of each problem and append `/submissions`, eg
 `https://leetcode.com/problems/kth-smallest-element-in-a-bst/submissions/`
 Another would be to go through my history and navigate from there: https://leetcode.com/progress/
 
-
-## CLI interface
+## ✅ CLI interface - COMPLETED
 
 Need commands for the following:
 
-- Choose problem: Choose a new random unsolved problem (optional difficulty level; optional study plan name or URL, by default only choose from leetcode-75 and top-interview-150)
+- ✅ Choose problem: Choose a new random unsolved problem (optional difficulty level; optional study plan name or URL, by default only choose from leetcode-75 and top-interview-150)
 When filtering by difficulty level, use the overridden difficulty level if it exists, otherwise use the difficulty level from the master list.
 
-- Review: same, but choose a problem I've completed before.  Additional option: "choose problems solved at least N weeks ago"
+- ✅ Review: same, but choose a problem I've completed before.  Additional option: "choose problems solved at least N weeks ago"
 
-- Override difficulty: For a given problem, specify a difficulty level override for a problem where I disagree with the difficulty level (leetcode is terrible at this)
+- ✅ Override difficulty: For a given problem, specify a difficulty level override for a problem where I disagree with the difficulty level (leetcode is terrible at this)
 
-- Show progress (count and percent complete on each study plan)
+- ✅ Show progress (count and percent complete on each study plan)
 
-- Mark (URL) as completed with date
+- ✅ Mark (URL) as completed with date
 
+## ✅ IMPLEMENTATION STATUS
 
-### Less important side quest
+**FULLY FUNCTIONAL CLI TOOL COMPLETED:**
+- ✅ 209 problems scraped from LeetCode 75 and Top Interview 150
+- ✅ CSV storage at `~/.leetcode-picker/problems.csv`
+- ✅ Global CLI command `leetcode-picker` installed
+- ✅ All requested commands working: choose, review, override-difficulty, progress, mark-complete
+- ✅ Difficulty and study plan filtering
+- ✅ Progress tracking with percentages
+- ✅ Clean code passing all linters (Black, Flake8, MyPy)
+
+### TODO: Less important side quest
 
 Ideally marking complete would also mark problems complete on grind75 if the problem appears there; the challenge is that appears to only be stored in my firefox browser state, possibly in local storage, and i cleared all of it recently.
 There don't appear to be anchors for these elements, although there are aria labels based on the problem title
