@@ -210,7 +210,24 @@ def mark_complete(url: str, date: Optional[str]) -> None:
     """Mark a problem as completed."""
     storage = ProblemStorage()
 
-    problem = storage.get_problem(url)
+    # Normalize incoming URL to canonical LeetCode problem URL
+    canonical = _canonical_leetcode_problem_url(url) or url.rstrip("/")
+
+    # Try exact and trailing-slash variations
+    problem = storage.get_problem(canonical) or storage.get_problem(canonical.rstrip("/"))
+    if not problem and canonical.endswith("/"):
+        problem = storage.get_problem(canonical[:-1])
+
+    # Fallback: match by slug across all stored problems
+    if not problem:
+        problems = storage.load_problems()
+        target = _canonical_leetcode_problem_url(url)
+        if target:
+            for p in problems.values():
+                if _canonical_leetcode_problem_url(p.url) == target:
+                    problem = p
+                    break
+
     if not problem:
         print(f"Problem not found: {url}")
         print("Make sure the URL is correct and the problem is in the database.")
@@ -223,6 +240,13 @@ def mark_complete(url: str, date: Optional[str]) -> None:
         except ValueError:
             print("Invalid date format. Please use YYYY-MM-DD.")
             return
+
+    # Idempotency: do nothing if already marked complete for this date
+    effective_date = date or datetime.now().strftime("%Y-%m-%d")
+    if problem.last_pass_date == effective_date:
+        print(f"Already marked {problem.title} complete for {effective_date}")
+        print(f"  Completions: {problem.completions} → {problem.completions}")
+        return
 
     old_completions = problem.completions
     problem.mark_completed(date)
