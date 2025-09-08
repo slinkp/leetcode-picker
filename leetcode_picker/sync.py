@@ -154,12 +154,17 @@ class LeetCodeSync:
                 # Update existing problem
                 problem = existing_problems[problem_url]
 
-                # Convert timestamp to date (LeetCode uses Unix timestamp)
+                # Convert timestamp to date (LeetCode uses Unix timestamp as string)
                 import datetime
 
-                last_date = datetime.datetime.fromtimestamp(
-                    submission_data["last_accepted"]
-                ).strftime("%Y-%m-%d")
+                timestamp = submission_data["last_accepted"]
+                # Convert string timestamp to int if needed
+                if isinstance(timestamp, str):
+                    timestamp = int(timestamp)
+
+                last_date = datetime.datetime.fromtimestamp(timestamp).strftime(
+                    "%Y-%m-%d"
+                )
 
                 # Update completion data
                 problem.last_pass_date = last_date
