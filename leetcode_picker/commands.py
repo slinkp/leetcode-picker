@@ -190,7 +190,9 @@ def show_progress_verbose(study_plan: Optional[str] = None) -> None:
             if plan == "grind75":
                 plan_problems = scraper.scrape_grind75()
             else:
-                plan_problems = scraper.scrape_leetcode_study_plan(plan, STUDY_PLANS[plan])
+                plan_problems = scraper.scrape_leetcode_study_plan(
+                    plan, STUDY_PLANS[plan]
+                )
         except Exception as exc:  # pragma: no cover
             print(f"Error scraping {plan}: {exc}")
             print()
