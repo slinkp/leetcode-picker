@@ -7,11 +7,11 @@
 status=0
 
 echo Black...
-if ! black $*; then
+if ! black "$@"; then
   status=1
 fi
 echo Flake8...
-if ! flake8 $*; then
+if ! flake8 "$@"; then
   status=1
 fi
 # Optional secrets scan (runs only if tools are installed)
@@ -35,7 +35,7 @@ if command -v gitleaks >/dev/null 2>&1; then
 fi
 
 echo Mypy...
-if ! mypy $*; then
+if ! mypy "$@"; then
   status=1
 fi
 

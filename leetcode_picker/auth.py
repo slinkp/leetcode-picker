@@ -41,7 +41,10 @@ class LeetCodeAuth:
             json.dump(auth_data, f, indent=2)
 
         # Set restrictive permissions on auth file
-        os.chmod(self.auth_file, 0o600)
+        try:
+            os.chmod(self.auth_file, 0o600)
+        except OSError:
+            pass
 
         self.session_cookie = session_cookie
         self.csrf_token = csrf_token
