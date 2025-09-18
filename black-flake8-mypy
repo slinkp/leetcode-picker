@@ -40,7 +40,7 @@ fi
 
 if command -v gitleaks >/dev/null 2>&1; then
   echo "gitleaks..."
-  if ! gitleaks detect --no-git --exit-code 1; then
+  if ! gitleaks detect --exit-code 1; then
     status=1
   fi
 else
