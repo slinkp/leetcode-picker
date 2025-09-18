@@ -6,12 +6,19 @@
 
 status=0
 
+if [ "$1" != "" ]; then
+    WHERE="$1"
+    shift
+else
+    WHERE="."
+fi
+
 echo Black...
-if ! black "$@"; then
+if ! black "$WHERE" "$@"; then
   status=1
 fi
 echo Flake8...
-if ! flake8 "$@"; then
+if ! flake8 "$WHERE" "$@"; then
   status=1
 fi
 # Optional secrets scan (runs only if tools are installed)
@@ -26,16 +33,22 @@ if command -v detect-secrets >/dev/null 2>&1; then
     echo "detect-secrets not initialized (.secrets.baseline missing)."
     echo "Run: detect-secrets scan > .secrets.baseline to enable blocking."
   fi
+else
+  echo "detect-secrets not installed, skipping"
 fi
+
+
 if command -v gitleaks >/dev/null 2>&1; then
   echo "gitleaks..."
   if ! gitleaks detect --no-git --exit-code 1; then
     status=1
   fi
+else
+  echo "gitleaks not installed, skipping"
 fi
 
 echo Mypy...
-if ! mypy "$@"; then
+if ! mypy "$WHERE" "$@"; then
   status=1
 fi
 
